@@ -1,14 +1,19 @@
 package com.navigationactivity;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.HashMap;
 
 /**
  * Created by chybakut2004 on 13.07.15.
+ *
+ * Пример активити с навигацией
  */
 public class MainActivity extends NavigationActivity {
 
@@ -16,6 +21,7 @@ public class MainActivity extends NavigationActivity {
     private static final int FRAGMENT_1 = 1;
     private static final int FRAGMENT_2 = 3;
     private static final int FRAGMENT_3 = 5;
+    private static final int SUB_FRAGMENT = 111;
 
     @Override
     public void initTitles(HashMap<Integer, String> titles) {
@@ -105,8 +111,33 @@ public class MainActivity extends NavigationActivity {
                 };
                 break;
 
+            // Фрагменты, являющиеся элементами меню в дровере
             case FRAGMENT_1:case FRAGMENT_2:case FRAGMENT_3:
                 fragment = new PlaceholderFragment() {
+
+                    @Override
+                    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+                        Button button = new Button(getActivity());
+                        button.setText("Нажми меня");
+                        ((ViewGroup) view).addView(button);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PlaceholderFragment subFragment = newFragmentInstance(SUB_FRAGMENT);
+
+                                Bundle args = subFragment.getArguments();
+                                args.putString("key", "value");
+
+                                addSubFragment(subFragment);
+                            }
+                        });
+
+                        return view;
+                    }
+
                     @Override
                     public void restoreMenu(Menu menu) {
 
@@ -124,6 +155,36 @@ public class MainActivity extends NavigationActivity {
                     }
 
                     // Нужно показать кнопку назад
+                    @Override
+                    public boolean needsShowMainMenuButton() {
+                        return false;
+                    }
+
+                    @Override
+                    public void resumeFragment() {
+
+                    }
+                };
+                break;
+
+            // Подфрагмент (Что-то далекое в навигации)
+            case SUB_FRAGMENT:
+                fragment = new PlaceholderFragment() {
+                    @Override
+                    public void restoreMenu(Menu menu) {
+
+                    }
+
+                    @Override
+                    public boolean isDrawerElement() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean hidePrevFragment() {
+                        return true;
+                    }
+
                     @Override
                     public boolean needsShowMainMenuButton() {
                         return false;
