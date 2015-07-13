@@ -27,46 +27,9 @@ public abstract class PlaceholderFragment extends Fragment {
      * Возвращает экземпляр фрагмента для категории пользователя в зависимости от
      * переданного номера.
      */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-        PlaceholderFragment fragment;
-
+    public static PlaceholderFragment newInstance(int sectionNumber, PlaceholderFragment fragment) {
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-
-
-
-        // TODO здесь нужно создавать экземпляры фрагментов в зависимости от номера меню
-        switch (sectionNumber) {
-
-            default:
-                fragment = new PlaceholderFragment() {
-                    @Override
-                    public void restoreMenu(Menu menu) {
-
-                    }
-
-                    @Override
-                    public boolean isDrawerElement() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean hidePrevFragment() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean needsShowMainMenuButton() {
-                        return true;
-                    }
-
-                    @Override
-                    public void resumeFragment() {
-
-                    }
-                };
-                break;
-        }
 
         fragment.setArguments(args);
 

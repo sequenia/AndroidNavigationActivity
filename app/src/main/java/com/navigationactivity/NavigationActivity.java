@@ -40,7 +40,7 @@ public abstract class NavigationActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(getActivityLayoutId());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -66,6 +66,7 @@ public abstract class NavigationActivity extends ActionBarActivity
                 .beginTransaction()
                 .replace(R.id.navigation_drawer, mNavigationDrawerFragment)
                 .commit();
+
         mTitle = getTitle();
     }
 
@@ -156,6 +157,7 @@ public abstract class NavigationActivity extends ActionBarActivity
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
+
         getToolbarTitle().setText(mTitle);
     }
 
@@ -250,7 +252,8 @@ public abstract class NavigationActivity extends ActionBarActivity
      * @param number
      */
     public void onSectionAttached(int number) {
-        String mTitle = titles.get(number);
+        mTitle = titles.get(number);
+
         if(mTitle == null) {
             mTitle = getString(R.string.app_name);
         }
@@ -283,11 +286,18 @@ public abstract class NavigationActivity extends ActionBarActivity
             return true;
         }
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Этот метод должен вернуть фрагмент в зависимости от переданного индекса.
+     * (Индекс возвращается по номеру элемента меню).
+     *
+     * @param number
+     * @return
+     */
+    public PlaceholderFragment newFragmentInstance(int number) {
+        return PlaceholderFragment.newInstance(number, createFragmentByNumber(number));
     }
 
     /**
@@ -332,13 +342,17 @@ public abstract class NavigationActivity extends ActionBarActivity
      */
     public abstract PlaceholderFragment createMainFragment();
 
+
     /**
-     * Этот метод должен вернуть фрагмент в зависимости от переданного индекса.
-     * (Индекс возвращается по номеру элемента меню).
-     *
-     * Обычно, это newInstance у PlaceHolderFragment
+     * Здесь нужно вернуть id разметки активити
+     * @return
+     */
+    public abstract int getActivityLayoutId();
+
+    /**
+     * Создать фрагмент в зависимости от номера
      * @param number
      * @return
      */
-    public abstract PlaceholderFragment newFragmentInstance(int number);
+    public abstract PlaceholderFragment createFragmentByNumber(int number);
 }
