@@ -1,4 +1,4 @@
-package com.navigationactivity;
+package com.navigationactivity.navigation;
 
 import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;

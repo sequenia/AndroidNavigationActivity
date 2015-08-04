@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.navigationactivity.navigation.NavigationActivity;
+import com.navigationactivity.navigation.PlaceholderFragment;
+
 import java.util.HashMap;
 
 /**
@@ -17,11 +20,11 @@ import java.util.HashMap;
  */
 public class MainActivity extends NavigationActivity {
 
-    private static final int FRAGMENT_MAIN = 0;
-    private static final int FRAGMENT_1 = 1;
-    private static final int FRAGMENT_2 = 3;
-    private static final int FRAGMENT_3 = 5;
-    private static final int SUB_FRAGMENT = 111;
+    public static final int FRAGMENT_MAIN = 0;
+    public static final int FRAGMENT_1 = 1;
+    public static final int FRAGMENT_2 = 3;
+    public static final int FRAGMENT_3 = 5;
+    public static final int SUB_FRAGMENT = 111;
 
     @Override
     public void initTitles(HashMap<Integer, String> titles) {
@@ -80,145 +83,17 @@ public class MainActivity extends NavigationActivity {
 
             // Главный фрагмент (Который показывается при заходе в приложение)
             case FRAGMENT_MAIN:
-                fragment = new PlaceholderFragment() {
-
-                    // Задание вида меню (скрытие и показ кнопок на тулбаре)
-                    @Override
-                    public void restoreMenu(Menu menu) {
-
-                    }
-
-                    // Фрагмент не является списком меню в дровере
-                    @Override
-                    public boolean isDrawerElement() {
-                        return false;
-                    }
-
-                    // Скрыть предыдущий фрагмент
-                    @Override
-                    public boolean hidePrevFragment() {
-                        return true;
-                    }
-
-                    // Показывать кнопку меню в тулбаре
-                    @Override
-                    public boolean needsShowMainMenuButton() {
-                        return true;
-                    }
-
-                    // Вызывается при возвращении на этот фрагмент
-                    @Override
-                    public void resumeFragment() {
-
-                    }
-
-                    @Override
-                    public int getFragmentLayoutId() {
-                        return R.layout.fragment_main;
-                    }
-
-                    @Override
-                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
-
-                    }
-                };
+                fragment = new MainFragment();
                 break;
 
             // Фрагменты, являющиеся элементами меню в дровере
             case FRAGMENT_1:case FRAGMENT_2:case FRAGMENT_3:
-                fragment = new PlaceholderFragment() {
-
-                    @Override
-                    public void restoreMenu(Menu menu) {
-
-                    }
-
-                    // Является фрагментом в меню дровера
-                    @Override
-                    public boolean isDrawerElement() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean hidePrevFragment() {
-                        return true;
-                    }
-
-                    // Нужно показать кнопку назад
-                    @Override
-                    public boolean needsShowMainMenuButton() {
-                        return false;
-                    }
-
-                    @Override
-                    public void resumeFragment() {
-
-                    }
-
-                    @Override
-                    public int getFragmentLayoutId() {
-                        return R.layout.fragment_main;
-                    }
-
-                    @Override
-                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
-                        Button button = new Button(getActivity());
-                        button.setText("Нажми меня");
-                        ((ViewGroup) view).addView(button);
-
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                PlaceholderFragment subFragment = newFragmentInstance(SUB_FRAGMENT);
-
-                                Bundle args = subFragment.getArguments();
-                                args.putString("key", "value");
-
-                                addSubFragment(subFragment);
-                            }
-                        });
-                    }
-                };
+                fragment = new MenuFragment();
                 break;
 
             // Подфрагмент (Что-то далекое в навигации)
             case SUB_FRAGMENT:
-                fragment = new PlaceholderFragment() {
-                    @Override
-                    public void restoreMenu(Menu menu) {
-
-                    }
-
-                    @Override
-                    public boolean isDrawerElement() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean hidePrevFragment() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean needsShowMainMenuButton() {
-                        return false;
-                    }
-
-                    @Override
-                    public void resumeFragment() {
-
-                    }
-
-                    @Override
-                    public int getFragmentLayoutId() {
-                        return R.layout.fragment_main;
-                    }
-
-                    @Override
-                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
-
-                    }
-                };
+                fragment = new SubFragment();
                 break;
         }
 

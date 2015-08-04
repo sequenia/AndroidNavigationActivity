@@ -1,4 +1,4 @@
-package com.navigationactivity;
+package com.navigationactivity.navigation;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.navigationactivity.R;
 
 import java.util.HashMap;
 
