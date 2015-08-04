@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -106,8 +105,8 @@ public abstract class NavigationDrawerFragment extends Fragment {
 
         showData();
 
-        setUp(R.id.navigation_drawer,
-                (DrawerLayout) getActivity().findViewById(R.id.drawer_layout));
+        setUp(getNavigationDrawerFragmentId(),
+                (DrawerLayout) getActivity().findViewById(getNavigationDrawerLayoutWidgetId()));
 
         return mDrawerContainer;
     }
@@ -115,7 +114,7 @@ public abstract class NavigationDrawerFragment extends Fragment {
     /**
      * Users of this fragment must call this method to set up the navigation drawer interactions.
      *
-     * @param fragmentId   The android:id of this fragment in its activity's layout.
+     * @param fragmentId   The android:id of this fragment in its fragment's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
@@ -232,7 +231,7 @@ public abstract class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(getGlobalMenuId(), menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -266,7 +265,7 @@ public abstract class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+        return ((NavigationActivity) getActivity()).getSupportActionBar();
     }
 
     /**
@@ -283,6 +282,10 @@ public abstract class NavigationDrawerFragment extends Fragment {
         mDrawerToggle.setDrawerIndicatorEnabled(enabled);
     }
 
+    public ViewGroup getDrawerContainer() {
+        return mDrawerContainer;
+    }
+
     /**
      * Здесь можно модифицировать дровер под разные нужды,
      * например выводить аватар и имя пользователя.
@@ -290,10 +293,22 @@ public abstract class NavigationDrawerFragment extends Fragment {
     public abstract void showData();
 
     /**
-     * Здесь нужно вернуть id разметки для меню
+     * Здесь нужно вернуть id разметки для дровера
      * @return
      */
     public abstract int getNavigationDrawerLayoutId();
+
+    /**
+     * Здесь нужно вернуть id фрагмента для дровера в разметке
+     * @return
+     */
+    public abstract int getNavigationDrawerFragmentId();
+
+    /**
+     * id виджета Drawer Layout в разметке активити
+     * @return
+     */
+    public abstract int getNavigationDrawerLayoutWidgetId();
 
     /**
      * Здесь нужно добавить все элементы меню в массив items
@@ -308,4 +323,10 @@ public abstract class NavigationDrawerFragment extends Fragment {
      * @return
      */
     public abstract TextView getToolbarTitle();
+
+    /**
+     * Ссылка на глобальное меню
+     * @return
+     */
+    public abstract int getGlobalMenuId();
 }

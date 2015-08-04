@@ -13,15 +13,19 @@ import android.view.ViewGroup;
  *
  * Базовый фрагмент, использующийся в навигации
  */
-public abstract class PlaceholderFragment extends Fragment {
+public abstract class PlaceholderFragment extends FragmentWithProgress {
 
-    private int number;                      // Номер секции меню.
+    private int number; // Номер секции меню.
 
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    public PlaceholderFragment() {
+
+    }
 
     /**
      * Возвращает экземпляр фрагмента для категории пользователя в зависимости от
@@ -44,7 +48,9 @@ public abstract class PlaceholderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(getFragmentLayoutId(), container, false);
+        onCreateViewCustom(inflater, container, savedInstanceState, view);
+        return view;
     }
 
     @Override
@@ -99,4 +105,19 @@ public abstract class PlaceholderFragment extends Fragment {
      * Вызывается при нажатии кнопки НАЗАД при возвращении к фрагменту.
      */
     public abstract void resumeFragment();
+
+    /**
+     * id разметки для фрагмента
+     * @return
+     */
+    public abstract int getFragmentLayoutId();
+
+    /**
+     * вызывается при создании вьюшки фрагмента
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
+    public abstract void onCreateViewCustom(LayoutInflater inflater, ViewGroup container,
+                                            Bundle savedInstanceState, View view);
 }

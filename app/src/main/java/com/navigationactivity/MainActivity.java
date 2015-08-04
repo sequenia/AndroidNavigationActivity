@@ -30,11 +30,14 @@ public class MainActivity extends NavigationActivity {
         titles.put(FRAGMENT_1, "FRAGMENT 1");
         titles.put(FRAGMENT_2, "FRAGMENT 2");
         titles.put(FRAGMENT_3, "FRAGMENT 3");
+        titles.put(SUB_FRAGMENT, "FRAGMENT 4");
     }
 
+    /**
+     * Вернуть здесь TextView, в которой отображается заголовок тулбара
+     */
     @Override
     public TextView getToolbarTitle() {
-        // Вернуть вьюшку для заголовка
         return (TextView) findViewById(R.id.toolbar_title);
     }
 
@@ -45,7 +48,7 @@ public class MainActivity extends NavigationActivity {
     }
 
     @Override
-    public void showNavigationDrawerData() {
+    public void showNavigationDrawerData(ViewGroup drawerContainer) {
         // Забить личные данные в дровер
     }
 
@@ -108,35 +111,22 @@ public class MainActivity extends NavigationActivity {
                     public void resumeFragment() {
 
                     }
+
+                    @Override
+                    public int getFragmentLayoutId() {
+                        return R.layout.fragment_main;
+                    }
+
+                    @Override
+                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
+
+                    }
                 };
                 break;
 
             // Фрагменты, являющиеся элементами меню в дровере
             case FRAGMENT_1:case FRAGMENT_2:case FRAGMENT_3:
                 fragment = new PlaceholderFragment() {
-
-                    @Override
-                    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                        View view = super.onCreateView(inflater, container, savedInstanceState);
-
-                        Button button = new Button(getActivity());
-                        button.setText("Нажми меня");
-                        ((ViewGroup) view).addView(button);
-
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                PlaceholderFragment subFragment = newFragmentInstance(SUB_FRAGMENT);
-
-                                Bundle args = subFragment.getArguments();
-                                args.putString("key", "value");
-
-                                addSubFragment(subFragment);
-                            }
-                        });
-
-                        return view;
-                    }
 
                     @Override
                     public void restoreMenu(Menu menu) {
@@ -163,6 +153,30 @@ public class MainActivity extends NavigationActivity {
                     @Override
                     public void resumeFragment() {
 
+                    }
+
+                    @Override
+                    public int getFragmentLayoutId() {
+                        return R.layout.fragment_main;
+                    }
+
+                    @Override
+                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
+                        Button button = new Button(getActivity());
+                        button.setText("Нажми меня");
+                        ((ViewGroup) view).addView(button);
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PlaceholderFragment subFragment = newFragmentInstance(SUB_FRAGMENT);
+
+                                Bundle args = subFragment.getArguments();
+                                args.putString("key", "value");
+
+                                addSubFragment(subFragment);
+                            }
+                        });
                     }
                 };
                 break;
@@ -194,10 +208,56 @@ public class MainActivity extends NavigationActivity {
                     public void resumeFragment() {
 
                     }
+
+                    @Override
+                    public int getFragmentLayoutId() {
+                        return R.layout.fragment_main;
+                    }
+
+                    @Override
+                    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
+
+                    }
                 };
                 break;
         }
 
         return fragment;
+    }
+
+    // Вернуть id дровер фрагмента в разметке
+    @Override
+    public int getNavigationDrawerFragmentId() {
+        return R.id.navigation_drawer;
+    }
+
+    // Вернуть id виджета дровера в разметке
+    @Override
+    public int getNavigationDrawerLayoutWidgetId() {
+        return R.id.drawer_layout;
+    }
+
+    // Вернуть id меню во время открытого дровера
+    @Override
+    public int getGlobalMenuId() {
+        return R.menu.global;
+    }
+
+    // Вернуть id меню
+    @Override
+    public int getMenuId() {
+        return R.menu.main;
+    }
+
+    // Вернуть id фрагмента в разметке, куда помещается контент
+    @Override
+    public int getContentFragmentId() {
+        return R.id.content;
+    }
+
+    // Вернуть id тулбара в разметке
+    @Override
+    public int getToolbarId() {
+        return R.id.toolbar;
     }
 }

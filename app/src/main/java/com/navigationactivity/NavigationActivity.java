@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,7 @@ import java.util.Stack;
  *
  * Активити с нафигацией с помощью фрагментов
  */
-public abstract class NavigationActivity extends ActionBarActivity
+public abstract class NavigationActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     // Дровер
@@ -42,7 +43,7 @@ public abstract class NavigationActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(getActivityLayoutId());
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(getToolbarId());
         setSupportActionBar(toolbar);
 
         // Заполнение списка заголовков
@@ -64,7 +65,7 @@ public abstract class NavigationActivity extends ActionBarActivity
         mNavigationDrawerFragment = createNavigationDrawer();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.navigation_drawer, mNavigationDrawerFragment)
+                .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment)
                 .commit();
 
         mTitle = getTitle();
@@ -78,12 +79,22 @@ public abstract class NavigationActivity extends ActionBarActivity
 
             @Override
             public void showData() {
-                activity.showNavigationDrawerData();
+                activity.showNavigationDrawerData(mNavigationDrawerFragment.getDrawerContainer());
             }
 
             @Override
             public int getNavigationDrawerLayoutId() {
                 return activity.getNavigationDrawerLayoutId();
+            }
+
+            @Override
+            public int getNavigationDrawerFragmentId() {
+                return activity.getNavigationDrawerFragmentId();
+            }
+
+            @Override
+            public int getNavigationDrawerLayoutWidgetId() {
+                return activity.getNavigationDrawerLayoutWidgetId();
             }
 
             @Override
@@ -94,6 +105,11 @@ public abstract class NavigationActivity extends ActionBarActivity
             @Override
             public TextView getToolbarTitle() {
                 return activity.getToolbarTitle();
+            }
+
+            @Override
+            public int getGlobalMenuId() {
+                return activity.getGlobalMenuId();
             }
         };
     }
@@ -117,7 +133,7 @@ public abstract class NavigationActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        ft.add(R.id.content, fragment); // Добавляем фрагмент на экран
+        ft.add(getContentFragmentId(), fragment); // Добавляем фрагмент на экран
 
         // Если фрагмент является секцией меню, то очищаем стек, перед тем как добавить его.
         if(fragment.isDrawerElement()) {
@@ -130,7 +146,7 @@ public abstract class NavigationActivity extends ActionBarActivity
         // Ставим верхний фрагмент на паузу
         PlaceholderFragment last = fragmentStack.lastElement();
         last.onPause(); // Останавливаем предыдущий фрагмент
-        if(fragment.hidePrevFragment()) {
+        if (fragment.hidePrevFragment()) {
             ft.hide(last);  // Скрываем предыдущий фрагмент с экрана
         } else {
             ft.show(last);
@@ -158,12 +174,15 @@ public abstract class NavigationActivity extends ActionBarActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
 
-        getToolbarTitle().setText(mTitle);
+        TextView title = getToolbarTitle();
+        if(title != null) {
+            getToolbarTitle().setText(mTitle);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(getMenuId(), menu);
         restoreActionBar();
         this.menu = menu;
         restoreMenu();
@@ -178,7 +197,7 @@ public abstract class NavigationActivity extends ActionBarActivity
      */
     public void restoreMenu() {
         PlaceholderFragment fragment = fragmentStack.lastElement();
-        if(fragment != null) {
+        if (fragment != null) {
             fragment.restoreMenu(menu);
         }
     }
@@ -191,7 +210,7 @@ public abstract class NavigationActivity extends ActionBarActivity
      */
     @Override
     public void onBackPressed() {
-        if (fragmentStack.size() >= 2) {
+        if (fragmentStack.size() > 1) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
 
@@ -206,9 +225,9 @@ public abstract class NavigationActivity extends ActionBarActivity
             PlaceholderFragment currentFragment = fragmentStack.lastElement();
             currentFragment.resumeFragment();
             onSectionAttached(currentFragment.getNumber());
+            updateBackItem(currentFragment);
             restoreActionBar();
             restoreMenu();
-            updateBackItem(currentFragment);
         } else {
             super.onBackPressed();
         }
@@ -258,7 +277,10 @@ public abstract class NavigationActivity extends ActionBarActivity
             mTitle = getString(R.string.app_name);
         }
 
-        getToolbarTitle().setText(mTitle);
+        TextView title = getToolbarTitle();
+        if(title != null) {
+            getToolbarTitle().setText(mTitle);
+        }
         fragmentStack.lastElement().restoreMenu(menu);
     }
 
@@ -281,7 +303,7 @@ public abstract class NavigationActivity extends ActionBarActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == android.R.id.home && !fragmentStack.lastElement().needsShowMainMenuButton()) {
+        if (id == android.R.id.home && !fragmentStack.lastElement().needsShowMainMenuButton()) {
             onBackPressed();
             return true;
         }
@@ -310,38 +332,12 @@ public abstract class NavigationActivity extends ActionBarActivity
     public abstract void initTitles(HashMap<Integer, String> titles);
 
     /**
-     * Вернуть здесь TextView, в которой отображается заголовок тулбара
-     * @return
-     */
-    public abstract TextView getToolbarTitle();
-
-    /**
-     * Вернуть id разметки дровера
-     * @return
-     */
-    public abstract int getNavigationDrawerLayoutId();
-
-    /**
-     * Здесь можно показать данные в дровере (Имя пользователя, аватар и т.д.)
-     */
-    public abstract void showNavigationDrawerData();
-
-    /**
      * Здесь нужно добавить все элементы дровера в массив items
      * для привязки кликов по ним.
      * @param drawerContainer - уже созданная разметка дровера
      * @param items
      */
     public abstract void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
-
-
-    /**
-     * Этот метод должен вернуть главный фрагмент активити, который будет показан,
-     * если не выбрано ни одного элемента меню.
-     * @return
-     */
-    public abstract PlaceholderFragment createMainFragment();
-
 
     /**
      * Здесь нужно вернуть id разметки активити
@@ -355,4 +351,64 @@ public abstract class NavigationActivity extends ActionBarActivity
      * @return
      */
     public abstract PlaceholderFragment createFragmentByNumber(int number);
+
+    /**
+     * Этот метод должен вернуть главный фрагмент активити, который будет показан,
+     * если не выбрано ни одного элемента меню.
+     * @return
+     */
+    public abstract PlaceholderFragment createMainFragment();
+
+    /**
+     * id фрагмента с дровером в разметке
+     * @return
+     */
+    public abstract int getNavigationDrawerFragmentId();
+
+    /**
+     * id виджета для активити с дровером в разметке
+     * @return
+     */
+    public abstract int getNavigationDrawerLayoutWidgetId();
+
+    /**
+     * id фрагмента, куда будет помещаться контент
+     * @return
+     */
+    public abstract int getContentFragmentId();
+
+    /**
+     * id тулбара в разметке
+     * @return
+     */
+    public abstract int getToolbarId();
+
+    /**
+     * Вернуть id разметки дровера
+     * @return
+     */
+    public abstract int getNavigationDrawerLayoutId();
+
+    /**
+     * id глобального меню
+     * @return
+     */
+    public abstract int getGlobalMenuId();
+
+    /**
+     * id меню
+     * @return
+     */
+    public abstract int getMenuId();
+
+    /**
+     * Вернуть здесь TextView, в которой отображается заголовок тулбара
+     * @return
+     */
+    public abstract TextView getToolbarTitle();
+
+    /**
+     * Здесь можно показать данные в дровере (Имя пользователя, аватар и т.д.)
+     */
+    public abstract void showNavigationDrawerData(ViewGroup drawerContainer);
 }
