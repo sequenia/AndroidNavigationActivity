@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -182,6 +183,15 @@ public class NavigationDrawerFragment extends Fragment {
                 mDrawerToggle.syncState();
             }
         });
+
+        NavigationActivity activity = (NavigationActivity) getActivity();
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        PlaceholderFragment lastFragment = activity.getLastFragment(fragmentManager);
+        if(lastFragment != null) {
+            setDrawerIndicatorEnabled(
+                    activity.getLastFragment(activity.getSupportFragmentManager())
+                            .needsShowMainMenuButton());
+        }
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }

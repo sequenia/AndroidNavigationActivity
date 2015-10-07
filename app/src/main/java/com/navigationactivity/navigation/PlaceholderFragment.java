@@ -66,6 +66,10 @@ public abstract class PlaceholderFragment extends Fragment {
         }
     }
 
+    public String getName() {
+        return String.valueOf(getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
     public boolean isInNavigation() {
         return true;
     }

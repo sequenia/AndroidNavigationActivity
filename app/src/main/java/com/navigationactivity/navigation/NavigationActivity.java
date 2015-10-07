@@ -31,9 +31,6 @@ public abstract class NavigationActivity extends AppCompatActivity
     // Заголовок
     private CharSequence mTitle;
 
-    // Стек фрагментов. Используется для навигации между фрагментами.
-    private Stack<PlaceholderFragment> fragmentStack;
-
     private Menu menu; // Меню с элементами управления на тулбаре.
 
     // Заголовки экранов
@@ -52,25 +49,32 @@ public abstract class NavigationActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(getToolbarId());
         setSupportActionBar(toolbar);
 
-        // Инициализация стека фрагментов
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentStack = new Stack<PlaceholderFragment>();
-
-        // Помещаем главный фрагмент в стек
-        PlaceholderFragment mapFragment = createMainFragment();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(R.id.content, mapFragment);
-        fragmentStack.push(mapFragment);
-        ft.commit();
 
         // Настройка навигационного меню
         mNavigationDrawerFragment = createNavigationDrawer();
-        getSupportFragmentManager()
-                .beginTransaction()
+        fragmentManager.beginTransaction()
                 .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment)
                 .commit();
 
         mTitle = getTitle();
+
+        // Помещаем главный фрагмент в стек
+        if(savedInstanceState == null) {
+            PlaceholderFragment mainFragment = createMainFragment();
+            fragmentManager.beginTransaction()
+                    .add(R.id.content, mainFragment, mainFragment.getName())
+                    .addToBackStack(mainFragment.getName())
+                    .commit();
+        } else {
+            restore(getLastFragment(fragmentManager).getNumber());
+        }
+    }
+
+    public void restore(int number) {
+        onSectionAttached(number);
+        restoreActionBar();
+        restoreMenu();
     }
 
     private NavigationDrawerFragment createNavigationDrawer() {
@@ -94,20 +98,18 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     public void addSubFragment(PlaceholderFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-
-        ft.add(getContentFragmentId(), fragment); // Добавляем фрагмент на экран
 
         // Если фрагмент является секцией меню, то очищаем стек, перед тем как добавить его.
         if(fragment.isDrawerElement()) {
-            while (fragmentStack.size() > 1) {
-                fragmentStack.lastElement().onPause();  // Останавливаем верхний фрагмент
-                ft.remove(fragmentStack.pop());         // Удаляем его с экрана и из стека
+            while (fragmentManager.getBackStackEntryCount() > 1) {
+                fragmentManager.popBackStackImmediate();
             }
         }
 
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
         // Ставим верхний фрагмент на паузу
-        PlaceholderFragment last = fragmentStack.lastElement();
+        PlaceholderFragment last = getLastFragment(fragmentManager);
         last.onPause(); // Останавливаем предыдущий фрагмент
         if (fragment.hidePrevFragment()) {
             ft.hide(last);  // Скрываем предыдущий фрагмент с экрана
@@ -115,9 +117,9 @@ public abstract class NavigationActivity extends AppCompatActivity
             ft.show(last);
         }
 
-        fragmentStack.push(fragment); // Добавляем новый фрагмент в стек
-
-        ft.commit();
+        ft.add(getContentFragmentId(), fragment, fragment.getName())
+                .addToBackStack(fragment.getName())
+                .commit();
 
         updateBackItem(fragment); // Обновление вида кнопки меню
     }
@@ -159,10 +161,22 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Логика задания вида описывается в методе restoreMenu у фрагмента.
      */
     public void restoreMenu() {
-        PlaceholderFragment fragment = fragmentStack.lastElement();
+        PlaceholderFragment fragment = getLastFragment(getSupportFragmentManager());
         if (fragment != null) {
             fragment.restoreMenu(menu);
         }
+    }
+
+    public PlaceholderFragment getLastFragment(FragmentManager fragmentManager) {
+        int fragmentsCount = fragmentManager.getBackStackEntryCount();
+
+        if(fragmentsCount == 0) {
+            return null;
+        }
+
+        FragmentManager.BackStackEntry lastEntry = fragmentManager.getBackStackEntryAt(fragmentsCount - 1);
+        String lastFragmentName = lastEntry.getName();
+        return (PlaceholderFragment) fragmentManager.findFragmentByTag(lastFragmentName);
     }
 
     /**
@@ -173,26 +187,17 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
-        if (fragmentStack.size() > 1) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
-            fragmentStack.lastElement().onPause();  // Останавливаем текущий фрагмент
-            ft.remove(fragmentStack.pop());         // Удаляем его с экрана и из стека
-            fragmentStack.lastElement().onResume(); // Возобновляем предыдущий фрагмент
-            ft.show(fragmentStack.lastElement());   // Показываем предыдущий фрагмент на экране
-
-            ft.commit();
-
-            // Настройка тулбара для предыдущего фрагмента
-            PlaceholderFragment currentFragment = fragmentStack.lastElement();
-            currentFragment.resumeFragment();
-            onSectionAttached(currentFragment.getNumber());
-            updateBackItem(currentFragment);
-            restoreActionBar();
-            restoreMenu();
-        } else {
+        if(fragmentManager.getBackStackEntryCount() > 1) {
             super.onBackPressed();
+
+            PlaceholderFragment currentFragment = getLastFragment(fragmentManager);
+            currentFragment.resumeFragment();
+            restore(currentFragment.getNumber());
+            updateBackItem(currentFragment);
+        } else {
+            finish();
         }
     }
 
@@ -244,9 +249,7 @@ public abstract class NavigationActivity extends AppCompatActivity
         if(title != null) {
             getToolbarTitle().setText(mTitle);
         }
-        if(fragmentStack != null) {
-            fragmentStack.lastElement().restoreMenu(menu);
-        }
+        //getLastFragment().restoreMenu(menu);
     }
 
     /**
@@ -260,15 +263,11 @@ public abstract class NavigationActivity extends AppCompatActivity
         return menu;
     }
 
-    public Stack<PlaceholderFragment> getFragmentStack() {
-        return fragmentStack;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == android.R.id.home && !fragmentStack.lastElement().needsShowMainMenuButton()) {
+        if (id == android.R.id.home && !getLastFragment(getSupportFragmentManager()).needsShowMainMenuButton()) {
             onBackPressed();
             return true;
         }
