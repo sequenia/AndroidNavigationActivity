@@ -2,6 +2,7 @@ package com.navigationactivity.navigation;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -12,7 +13,7 @@ import android.view.ViewGroup;
  *
  * Базовый фрагмент, использующийся в навигации
  */
-public abstract class PlaceholderFragment extends FragmentWithProgress {
+public abstract class PlaceholderFragment extends Fragment {
 
     private int number; // Номер секции меню.
 

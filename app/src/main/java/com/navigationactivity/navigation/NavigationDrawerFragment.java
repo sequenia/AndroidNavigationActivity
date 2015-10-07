@@ -27,7 +27,7 @@ import java.util.HashMap;
  *
  * Боковое меню.
  */
-public abstract class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends Fragment {
 
     /**
      * Запоминаем позицию выбранного элемента меню
@@ -278,6 +278,13 @@ public abstract class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+        void showNavigationDrawerData(ViewGroup drawerContainer);
+        int getNavigationDrawerLayoutId();
+        int getNavigationDrawerFragmentId();
+        int getNavigationDrawerLayoutWidgetId();
+        void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
+        TextView getToolbarTitle();
+        int getGlobalMenuId();
     }
 
     public void setDrawerIndicatorEnabled(boolean enabled) {
@@ -292,25 +299,33 @@ public abstract class NavigationDrawerFragment extends Fragment {
      * Здесь можно модифицировать дровер под разные нужды,
      * например выводить аватар и имя пользователя.
      */
-    public abstract void showData();
+    public void showData() {
+        mCallbacks.showNavigationDrawerData(getDrawerContainer());
+    }
 
     /**
      * Здесь нужно вернуть id разметки для дровера
      * @return
      */
-    public abstract int getNavigationDrawerLayoutId();
+    public int getNavigationDrawerLayoutId() {
+        return mCallbacks.getNavigationDrawerLayoutId();
+    }
 
     /**
      * Здесь нужно вернуть id фрагмента для дровера в разметке
      * @return
      */
-    public abstract int getNavigationDrawerFragmentId();
+    public int getNavigationDrawerFragmentId() {
+        return mCallbacks.getNavigationDrawerFragmentId();
+    }
 
     /**
      * id виджета Drawer Layout в разметке активити
      * @return
      */
-    public abstract int getNavigationDrawerLayoutWidgetId();
+    public int getNavigationDrawerLayoutWidgetId() {
+        return mCallbacks.getNavigationDrawerLayoutWidgetId();
+    }
 
     /**
      * Здесь нужно добавить все элементы меню в массив items
@@ -318,17 +333,23 @@ public abstract class NavigationDrawerFragment extends Fragment {
      * @param drawerContainer - уже созданная разметка дровера
      * @param items
      */
-    public abstract void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
+    public void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer) {
+        mCallbacks.initDrawerItems(items, drawerContainer);
+    }
 
     /**
      * Здесь нужно вернуть TextView, являющийся заголовком тулбара.
      * @return
      */
-    public abstract TextView getToolbarTitle();
+    public TextView getToolbarTitle() {
+        return mCallbacks.getToolbarTitle();
+    }
 
     /**
      * Ссылка на глобальное меню
      * @return
      */
-    public abstract int getGlobalMenuId();
+    public int getGlobalMenuId() {
+        return mCallbacks.getGlobalMenuId();
+    }
 }

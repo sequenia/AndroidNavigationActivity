@@ -41,15 +41,16 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Заполнение списка заголовков
+        titles = new HashMap<Integer, String>();
+        initTitles(titles);
+
         super.onCreate(savedInstanceState);
         setContentView(getActivityLayoutId());
 
         Toolbar toolbar = (Toolbar) findViewById(getToolbarId());
         setSupportActionBar(toolbar);
-
-        // Заполнение списка заголовков
-        titles = new HashMap<Integer, String>();
-        initTitles(titles);
 
         // Инициализация стека фрагментов
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -73,46 +74,7 @@ public abstract class NavigationActivity extends AppCompatActivity
     }
 
     private NavigationDrawerFragment createNavigationDrawer() {
-
-        final NavigationActivity activity = this;
-
-        return new NavigationDrawerFragment() {
-
-            @Override
-            public void showData() {
-                activity.showNavigationDrawerData(mNavigationDrawerFragment.getDrawerContainer());
-            }
-
-            @Override
-            public int getNavigationDrawerLayoutId() {
-                return activity.getNavigationDrawerLayoutId();
-            }
-
-            @Override
-            public int getNavigationDrawerFragmentId() {
-                return activity.getNavigationDrawerFragmentId();
-            }
-
-            @Override
-            public int getNavigationDrawerLayoutWidgetId() {
-                return activity.getNavigationDrawerLayoutWidgetId();
-            }
-
-            @Override
-            public void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer) {
-                activity.initDrawerItems(items, drawerContainer);
-            }
-
-            @Override
-            public TextView getToolbarTitle() {
-                return activity.getToolbarTitle();
-            }
-
-            @Override
-            public int getGlobalMenuId() {
-                return activity.getGlobalMenuId();
-            }
-        };
+        return new NavigationDrawerFragment();
     }
 
     @Override
@@ -282,7 +244,9 @@ public abstract class NavigationActivity extends AppCompatActivity
         if(title != null) {
             getToolbarTitle().setText(mTitle);
         }
-        fragmentStack.lastElement().restoreMenu(menu);
+        if(fragmentStack != null) {
+            fragmentStack.lastElement().restoreMenu(menu);
+        }
     }
 
     /**
@@ -407,9 +371,4 @@ public abstract class NavigationActivity extends AppCompatActivity
      * @return
      */
     public abstract TextView getToolbarTitle();
-
-    /**
-     * Здесь можно показать данные в дровере (Имя пользователя, аватар и т.д.)
-     */
-    public abstract void showNavigationDrawerData(ViewGroup drawerContainer);
 }
