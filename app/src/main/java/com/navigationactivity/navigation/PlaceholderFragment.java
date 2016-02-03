@@ -28,8 +28,7 @@ public abstract class PlaceholderFragment extends Fragment {
     }
 
     /**
-     * Возвращает экземпляр фрагмента для категории пользователя в зависимости от
-     * переданного номера.
+     * Задает фрагменту обязательные аргументы (Номер).
      */
     public static PlaceholderFragment newInstance(int sectionNumber, PlaceholderFragment fragment) {
         Bundle args = new Bundle();
@@ -83,20 +82,22 @@ public abstract class PlaceholderFragment extends Fragment {
      *
      * Здесь нужно настроить видимость кнопок в тулбаре
      */
-    public abstract void restoreMenu(Menu menu);
+    public abstract void setupToolbar(Menu menu);
 
     /**
-     * Вернуть true, если фрагмент - элемент меню в дровере
+     * Вернуть true, если при открытии фрагмента нужно очистить стек фрагментов
      * @return
      */
-    public abstract boolean isDrawerElement();
+    public abstract boolean clearStackBeforeOpen();
 
     /**
      * Скрывать предыдущий фрагмент или нет.
      * (Не нужно скрывать, если фрагмент является диалогом)
      * @return
      */
-    public abstract boolean hidePrevFragment();
+    public boolean hidePrevFragment() {
+        return true;
+    }
 
     /**
      * true, если нужно показать кнопку главного меню.

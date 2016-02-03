@@ -1,11 +1,9 @@
 package com.navigationactivity;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
+import android.Manifest;
+import android.support.v4.content.PermissionChecker;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.navigationactivity.navigation.NavigationActivity;
@@ -20,11 +18,20 @@ import java.util.HashMap;
  */
 public class MainActivity extends NavigationActivity {
 
+    // Коды экранов (фрагментов)
     public static final int FRAGMENT_MAIN = 0;
     public static final int FRAGMENT_1 = 1;
     public static final int FRAGMENT_2 = 3;
     public static final int FRAGMENT_3 = 5;
     public static final int SUB_FRAGMENT = 111;
+
+    // Менеджер проверки разрешений
+    private PermissionChecker checker;
+    // Разрешения, необходимые приложению
+    private String[] PERMISSIONS = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     @Override
     public void initTitles(HashMap<Integer, String> titles) {
@@ -36,17 +43,9 @@ public class MainActivity extends NavigationActivity {
         titles.put(SUB_FRAGMENT, "FRAGMENT 4");
     }
 
-    /**
-     * Вернуть здесь TextView, в которой отображается заголовок тулбара
-     */
-    @Override
-    public TextView getToolbarTitle() {
-        return (TextView) findViewById(R.id.toolbar_title);
-    }
-
+    // Id файла с разметкой дровера
     @Override
     public int getNavigationDrawerLayoutId() {
-        // Вернуть id разметки для дровера
         return R.layout.fragment_navigation_drawer;
     }
 
@@ -67,12 +66,6 @@ public class MainActivity extends NavigationActivity {
     public PlaceholderFragment createMainFragment() {
         // Создать главный фрагмент
         return newFragmentInstance(FRAGMENT_MAIN);
-    }
-
-    @Override
-    public int getActivityLayoutId() {
-        // Вернуть id разметки активити
-        return R.layout.activity_main;
     }
 
     @Override
@@ -100,18 +93,6 @@ public class MainActivity extends NavigationActivity {
         return fragment;
     }
 
-    // Вернуть id дровер фрагмента в разметке
-    @Override
-    public int getNavigationDrawerFragmentId() {
-        return R.id.navigation_drawer;
-    }
-
-    // Вернуть id виджета дровера в разметке
-    @Override
-    public int getNavigationDrawerLayoutWidgetId() {
-        return R.id.drawer_layout;
-    }
-
     // Вернуть id меню во время открытого дровера
     @Override
     public int getGlobalMenuId() {
@@ -122,17 +103,5 @@ public class MainActivity extends NavigationActivity {
     @Override
     public int getMenuId() {
         return R.menu.main;
-    }
-
-    // Вернуть id фрагмента в разметке, куда помещается контент
-    @Override
-    public int getContentFragmentId() {
-        return R.id.content;
-    }
-
-    // Вернуть id тулбара в разметке
-    @Override
-    public int getToolbarId() {
-        return R.id.toolbar;
     }
 }

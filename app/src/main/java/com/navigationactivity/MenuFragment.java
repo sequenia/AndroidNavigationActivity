@@ -16,19 +16,33 @@ import com.navigationactivity.navigation.PlaceholderFragment;
  * Пример секции меню
  */
 public class MenuFragment extends PlaceholderFragment {
+
     @Override
-    public void restoreMenu(Menu menu) {
+    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
+        Button button = (Button) view.findViewById(R.id.button);
+
+        // Пример открытия фрагмента по нажатию кнопки
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlaceholderFragment subFragment = ((NavigationActivity) getActivity()).newFragmentInstance(MainActivity.SUB_FRAGMENT);
+
+                Bundle args = subFragment.getArguments();
+                args.putString("key", "value");
+
+                ((NavigationActivity) getActivity()).addSubFragment(subFragment);
+            }
+        });
+    }
+
+    @Override
+    public void setupToolbar(Menu menu) {
 
     }
 
-    // Является фрагментом в меню дровера
+    // Является фрагментом в меню дровера. При открытии нужно очистить стек фрагментов
     @Override
-    public boolean isDrawerElement() {
-        return true;
-    }
-
-    @Override
-    public boolean hidePrevFragment() {
+    public boolean clearStackBeforeOpen() {
         return true;
     }
 
@@ -46,22 +60,5 @@ public class MenuFragment extends PlaceholderFragment {
     @Override
     public int getFragmentLayoutId() {
         return R.layout.fragment_menu;
-    }
-
-    @Override
-    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
-        Button button = (Button) view.findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PlaceholderFragment subFragment = PlaceholderFragment.newInstance(MainActivity.SUB_FRAGMENT, new SubFragment());
-
-                Bundle args = subFragment.getArguments();
-                args.putString("key", "value");
-
-                ((NavigationActivity) getActivity()).addSubFragment(subFragment);
-            }
-        });
     }
 }

@@ -17,13 +17,13 @@ public class MainFragment extends PlaceholderFragment {
 
     // Задание вида меню (скрытие и показ кнопок на тулбаре)
     @Override
-    public void restoreMenu(Menu menu) {
+    public void setupToolbar(Menu menu) {
 
     }
 
     // Фрагмент не является списком меню в дровере
     @Override
-    public boolean isDrawerElement() {
+    public boolean clearStackBeforeOpen() {
         return false;
     }
 

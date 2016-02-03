@@ -16,18 +16,19 @@ import com.navigationactivity.navigation.PlaceholderFragment;
 public class SubFragment extends PlaceholderFragment {
 
     @Override
-    public void restoreMenu(Menu menu) {
+    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
 
     }
 
     @Override
-    public boolean isDrawerElement() {
+    public void setupToolbar(Menu menu) {
+
+    }
+
+    // Не нужно очищать стек при открытии - это фрагмент далекой навигации
+    @Override
+    public boolean clearStackBeforeOpen() {
         return false;
-    }
-
-    @Override
-    public boolean hidePrevFragment() {
-        return true;
     }
 
     @Override
@@ -43,10 +44,5 @@ public class SubFragment extends PlaceholderFragment {
     @Override
     public int getFragmentLayoutId() {
         return R.layout.fragment_sub;
-    }
-
-    @Override
-    public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
-
     }
 }

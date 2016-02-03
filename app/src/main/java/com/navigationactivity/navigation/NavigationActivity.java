@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.navigationactivity.R;
 
 import java.util.HashMap;
-import java.util.Stack;
 
 /**
  * Created by chybakut2004 on 12.07.15.
@@ -100,7 +99,7 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Если фрагмент является секцией меню, то очищаем стек, перед тем как добавить его.
-        if(fragment.isDrawerElement()) {
+        if(fragment.clearStackBeforeOpen()) {
             while (fragmentManager.getBackStackEntryCount() > 1) {
                 fragmentManager.popBackStackImmediate();
             }
@@ -158,12 +157,12 @@ public abstract class NavigationActivity extends AppCompatActivity
     /**
      * Задает вид для меню айтемов в тулбаре для текущего фрагмента.
      *
-     * Логика задания вида описывается в методе restoreMenu у фрагмента.
+     * Логика задания вида описывается в методе setupToolbar у фрагмента.
      */
     public void restoreMenu() {
         PlaceholderFragment fragment = getLastFragment(getSupportFragmentManager());
         if (fragment != null) {
-            fragment.restoreMenu(menu);
+            fragment.setupToolbar(menu);
         }
     }
 
@@ -249,7 +248,6 @@ public abstract class NavigationActivity extends AppCompatActivity
         if(title != null) {
             getToolbarTitle().setText(mTitle);
         }
-        //getLastFragment().restoreMenu(menu);
     }
 
     /**
@@ -307,7 +305,9 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Здесь нужно вернуть id разметки активити
      * @return
      */
-    public abstract int getActivityLayoutId();
+    public int getActivityLayoutId() {
+        return R.layout.activity_navigation;
+    }
 
     /**
      * Создать фрагмент в зависимости от номера
@@ -327,28 +327,36 @@ public abstract class NavigationActivity extends AppCompatActivity
      * id фрагмента с дровером в разметке
      * @return
      */
-    public abstract int getNavigationDrawerFragmentId();
+    public int getNavigationDrawerFragmentId() {
+        return R.id.navigation_drawer;
+    }
 
     /**
      * id виджета для активити с дровером в разметке
      * @return
      */
-    public abstract int getNavigationDrawerLayoutWidgetId();
+    public int getNavigationDrawerLayoutWidgetId() {
+        return R.id.drawer_layout;
+    }
 
     /**
      * id фрагмента, куда будет помещаться контент
      * @return
      */
-    public abstract int getContentFragmentId();
+    public int getContentFragmentId() {
+        return R.id.content;
+    }
 
     /**
      * id тулбара в разметке
      * @return
      */
-    public abstract int getToolbarId();
+    public int getToolbarId() {
+        return R.id.toolbar;
+    }
 
     /**
-     * Вернуть id разметки дровера
+     * Вернуть id файла с разметкой дровера
      * @return
      */
     public abstract int getNavigationDrawerLayoutId();
@@ -369,5 +377,7 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Вернуть здесь TextView, в которой отображается заголовок тулбара
      * @return
      */
-    public abstract TextView getToolbarTitle();
+    public TextView getToolbarTitle() {
+        return (TextView) findViewById(R.id.toolbar_title);
+    }
 }

@@ -9,4 +9,10 @@
     <string name="navigation_drawer_open">Меню открыто</string>
     <string name="navigation_drawer_close">Меню закрыто</string>
 
+    <!-- PERMISSIONS -->
+    <string name="permissions_help">Помощь</string>
+    <string name="permissions_string_help_text">Отсутствуют разрешения.\n\nЧтобы предоставить разрешения, нажмите "Настройки", затем "Разрешения" и включите их.\n\nЗатем вернитесь в приложение.</string>
+    <string name="permissions_quit">Закрыть</string>
+    <string name="permissions_settings">Настройки</string>
+
 </resources>
