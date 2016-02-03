@@ -33,16 +33,6 @@ public class MainActivity extends NavigationActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    @Override
-    public void initTitles(HashMap<Integer, String> titles) {
-        // Заполнить заголовки
-        titles.put(FRAGMENT_MAIN, "MAIN");
-        titles.put(FRAGMENT_1, "FRAGMENT 1");
-        titles.put(FRAGMENT_2, "FRAGMENT 2");
-        titles.put(FRAGMENT_3, "FRAGMENT 3");
-        titles.put(SUB_FRAGMENT, "FRAGMENT 4");
-    }
-
     // Id файла с разметкой дровера
     @Override
     public int getNavigationDrawerLayoutId() {

@@ -185,12 +185,9 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         NavigationActivity activity = (NavigationActivity) getActivity();
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        PlaceholderFragment lastFragment = activity.getLastFragment(fragmentManager);
+        PlaceholderFragment lastFragment = activity.getLastFragment();
         if(lastFragment != null) {
-            setDrawerIndicatorEnabled(
-                    activity.getLastFragment(activity.getSupportFragmentManager())
-                            .needsShowMainMenuButton());
+            setDrawerIndicatorEnabled(lastFragment.needsShowMainMenuButton());
         }
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);

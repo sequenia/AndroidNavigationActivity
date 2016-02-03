@@ -54,4 +54,9 @@ public class MainFragment extends PlaceholderFragment {
     public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
 
     }
+
+    @Override
+    public String getTitle() {
+        return "MAIN";
+    }
 }

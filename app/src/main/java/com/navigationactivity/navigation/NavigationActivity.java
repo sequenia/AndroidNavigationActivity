@@ -32,15 +32,8 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     private Menu menu; // Меню с элементами управления на тулбаре.
 
-    // Заголовки экранов
-    private HashMap<Integer, String> titles;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        // Заполнение списка заголовков
-        titles = new HashMap<Integer, String>();
-        initTitles(titles);
 
         super.onCreate(savedInstanceState);
         setContentView(getActivityLayoutId());
@@ -66,12 +59,12 @@ public abstract class NavigationActivity extends AppCompatActivity
                     .addToBackStack(mainFragment.getName())
                     .commit();
         } else {
-            restore(getLastFragment(fragmentManager).getNumber());
+            restore(getLastFragment());
         }
     }
 
-    public void restore(int number) {
-        onSectionAttached(number);
+    public void restore(PlaceholderFragment fragment) {
+        updateTitle(fragment);
         restoreActionBar();
         restoreMenu();
     }
@@ -108,7 +101,7 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
         // Ставим верхний фрагмент на паузу
-        PlaceholderFragment last = getLastFragment(fragmentManager);
+        PlaceholderFragment last = getLastFragment();
         last.onPause(); // Останавливаем предыдущий фрагмент
         if (fragment.hidePrevFragment()) {
             ft.hide(last);  // Скрываем предыдущий фрагмент с экрана
@@ -160,13 +153,15 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Логика задания вида описывается в методе setupToolbar у фрагмента.
      */
     public void restoreMenu() {
-        PlaceholderFragment fragment = getLastFragment(getSupportFragmentManager());
+        PlaceholderFragment fragment = getLastFragment();
         if (fragment != null) {
             fragment.setupToolbar(menu);
         }
     }
 
-    public PlaceholderFragment getLastFragment(FragmentManager fragmentManager) {
+    public PlaceholderFragment getLastFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
         int fragmentsCount = fragmentManager.getBackStackEntryCount();
 
         if(fragmentsCount == 0) {
@@ -191,9 +186,9 @@ public abstract class NavigationActivity extends AppCompatActivity
         if(fragmentManager.getBackStackEntryCount() > 1) {
             super.onBackPressed();
 
-            PlaceholderFragment currentFragment = getLastFragment(fragmentManager);
+            PlaceholderFragment currentFragment = getLastFragment();
             currentFragment.resumeFragment();
-            restore(currentFragment.getNumber());
+            restore(currentFragment);
             updateBackItem(currentFragment);
         } else {
             finish();
@@ -234,11 +229,13 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Вызывается после того, как фрагмент будет помещен в активити.
      *
      * По умолчанию после этого в тулбар выставляется заголовок для текущего фрагмента.
-     *
-     * @param number
      */
-    public void onSectionAttached(int number) {
-        mTitle = titles.get(number);
+    public void updateTitle(PlaceholderFragment fragment) {
+        if(fragment == null) {
+            mTitle = getString(R.string.app_name);
+        } else {
+            mTitle = fragment.getTitle();
+        }
 
         if(mTitle == null) {
             mTitle = getString(R.string.app_name);
@@ -246,7 +243,7 @@ public abstract class NavigationActivity extends AppCompatActivity
 
         TextView title = getToolbarTitle();
         if(title != null) {
-            getToolbarTitle().setText(mTitle);
+            title.setText(mTitle);
         }
     }
 
@@ -265,7 +262,7 @@ public abstract class NavigationActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == android.R.id.home && !getLastFragment(getSupportFragmentManager()).needsShowMainMenuButton()) {
+        if (id == android.R.id.home && !getLastFragment().needsShowMainMenuButton()) {
             onBackPressed();
             return true;
         }
@@ -283,15 +280,6 @@ public abstract class NavigationActivity extends AppCompatActivity
     public PlaceholderFragment newFragmentInstance(int number) {
         return PlaceholderFragment.newInstance(number, createFragmentByNumber(number));
     }
-
-    /**
-     * Нужно заполнить контейнер titles заголовками,
-     * привязав каждый к значению Integer.
-     *
-     * Эти значения будут так же использоваться для создания экземпляров фрагментов.
-     * @param titles
-     */
-    public abstract void initTitles(HashMap<Integer, String> titles);
 
     /**
      * Здесь нужно добавить все элементы дровера в массив items

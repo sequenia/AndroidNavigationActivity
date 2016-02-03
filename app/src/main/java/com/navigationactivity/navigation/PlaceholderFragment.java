@@ -61,7 +61,8 @@ public abstract class PlaceholderFragment extends Fragment {
 
             number = args.getInt(ARG_SECTION_NUMBER);
 
-            ((NavigationActivity) activity).onSectionAttached(number);
+
+            ((NavigationActivity) activity).updateTitle(this);
         }
     }
 
@@ -125,4 +126,9 @@ public abstract class PlaceholderFragment extends Fragment {
      */
     public abstract void onCreateViewCustom(LayoutInflater inflater, ViewGroup container,
                                             Bundle savedInstanceState, View view);
+
+    /**
+     * @return Возвращает заголовок, который отобразитс
+     */
+    public abstract String getTitle();
 }

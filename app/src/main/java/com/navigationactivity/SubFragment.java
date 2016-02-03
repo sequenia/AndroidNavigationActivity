@@ -21,6 +21,11 @@ public class SubFragment extends PlaceholderFragment {
     }
 
     @Override
+    public String getTitle() {
+        return "SUB FRAGMENT";
+    }
+
+    @Override
     public void setupToolbar(Menu menu) {
 
     }

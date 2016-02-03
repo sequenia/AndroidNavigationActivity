@@ -36,6 +36,11 @@ public class MenuFragment extends PlaceholderFragment {
     }
 
     @Override
+    public String getTitle() {
+        return String.format("SECTION %d", getNumber());
+    }
+
+    @Override
     public void setupToolbar(Menu menu) {
 
     }
