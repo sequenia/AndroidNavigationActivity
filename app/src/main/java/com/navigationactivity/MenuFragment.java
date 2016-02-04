@@ -41,6 +41,11 @@ public class MenuFragment extends PlaceholderFragment {
     }
 
     @Override
+    public int getMenuId() {
+        return R.menu.main;
+    }
+
+    @Override
     public void setupToolbar(Menu menu) {
 
     }

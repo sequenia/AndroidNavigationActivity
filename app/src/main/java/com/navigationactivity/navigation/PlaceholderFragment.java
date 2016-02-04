@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,8 +15,6 @@ import android.view.ViewGroup;
  * Базовый фрагмент, использующийся в навигации
  */
 public abstract class PlaceholderFragment extends Fragment {
-
-    private int number; // Номер секции меню.
 
     /**
      * The fragment argument representing the section number for this
@@ -52,20 +51,6 @@ public abstract class PlaceholderFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if(isInNavigation()) {
-            Bundle args = getArguments();
-
-            number = args.getInt(ARG_SECTION_NUMBER);
-
-
-            ((NavigationActivity) activity).updateTitle(this);
-        }
-    }
-
     public String getName() {
         return String.valueOf(getArguments().getInt(ARG_SECTION_NUMBER));
     }
@@ -75,7 +60,12 @@ public abstract class PlaceholderFragment extends Fragment {
     }
 
     public int getNumber() {
-        return number;
+        return getArguments().getInt(ARG_SECTION_NUMBER);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /**
@@ -131,4 +121,6 @@ public abstract class PlaceholderFragment extends Fragment {
      * @return Возвращает заголовок, который отобразитс
      */
     public abstract String getTitle();
+
+    public abstract int getMenuId();
 }

@@ -59,4 +59,9 @@ public class MainFragment extends PlaceholderFragment {
     public String getTitle() {
         return "Главный экран";
     }
+
+    @Override
+    public int getMenuId() {
+        return R.menu.main;
+    }
 }

@@ -27,11 +27,6 @@ public abstract class NavigationActivity extends AppCompatActivity
     // Дровер
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    // Заголовок
-    private CharSequence mTitle;
-
-    private Menu menu; // Меню с элементами управления на тулбаре.
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -49,7 +44,15 @@ public abstract class NavigationActivity extends AppCompatActivity
                 .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment)
                 .commit();
 
-        mTitle = getTitle();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                PlaceholderFragment last = getLastFragment();
+                if(last != null) {
+                    setupScreen(last);
+                }
+            }
+        });
 
         // Помещаем главный фрагмент в стек
         if(savedInstanceState == null) {
@@ -59,14 +62,18 @@ public abstract class NavigationActivity extends AppCompatActivity
                     .addToBackStack(mainFragment.getName())
                     .commit();
         } else {
-            restore(getLastFragment());
+            setupScreen(getLastFragment());
         }
     }
 
-    public void restore(PlaceholderFragment fragment) {
+    /**
+     * Настраивает экран под переданный фрагмент (заголовок, кнопки и т.д.)
+     * @param fragment
+     */
+    public void setupScreen(PlaceholderFragment fragment) {
         updateTitle(fragment);
-        restoreActionBar();
-        restoreMenu();
+        hideDefaultTitle();
+        supportInvalidateOptionsMenu();
     }
 
     private NavigationDrawerFragment createNavigationDrawer() {
@@ -125,24 +132,21 @@ public abstract class NavigationActivity extends AppCompatActivity
     /**
      * Задание вида тулбара в зависимости от секции меню
      */
-    public void restoreActionBar() {
+    public void hideDefaultTitle() {
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
-        }
-
-        TextView title = getToolbarTitle();
-        if(title != null) {
-            getToolbarTitle().setText(mTitle);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(getMenuId(), menu);
-        restoreActionBar();
-        this.menu = menu;
-        restoreMenu();
+
+        PlaceholderFragment last = getLastFragment();
+        if(last != null) {
+            getMenuInflater().inflate(last.getMenuId(), menu);
+            restoreMenu(last, menu);
+        }
 
         return true;
     }
@@ -152,8 +156,7 @@ public abstract class NavigationActivity extends AppCompatActivity
      *
      * Логика задания вида описывается в методе setupToolbar у фрагмента.
      */
-    public void restoreMenu() {
-        PlaceholderFragment fragment = getLastFragment();
+    public void restoreMenu(PlaceholderFragment fragment, Menu menu) {
         if (fragment != null) {
             fragment.setupToolbar(menu);
         }
@@ -197,7 +200,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
         if(fragment != null) {
             fragment.resumeFragment();
-            restore(fragment);
             updateBackItem(fragment);
         }
     }
@@ -205,21 +207,21 @@ public abstract class NavigationActivity extends AppCompatActivity
     /**
      * Показывает меню айтем в тулбаре с id = itemId
      */
-    public void showMenuItem(int itemId) {
-        setMenuItemVisibility(itemId, true);
+    public void showMenuItem(Menu menu, int itemId) {
+        setMenuItemVisibility(menu, itemId, true);
     }
 
     /**
      * Скрывает меню айтем с тулбара
      */
-    public void hideMenuItem(int itemId) {
-        setMenuItemVisibility(itemId, false);
+    public void hideMenuItem(Menu menu, int itemId) {
+        setMenuItemVisibility(menu, itemId, false);
     }
 
     /**
      * Задает видимость меню айтема
      */
-    public void setMenuItemVisibility(int itemId, boolean isVisible) {
+    public void setMenuItemVisibility(Menu menu, int itemId, boolean isVisible) {
         if(menu != null) {
             MenuItem item = menu.findItem(itemId);
             if(item != null) {
@@ -229,24 +231,24 @@ public abstract class NavigationActivity extends AppCompatActivity
     }
 
     /**
-     * Вызывается после того, как фрагмент будет помещен в активити.
-     *
-     * По умолчанию после этого в тулбар выставляется заголовок для текущего фрагмента.
+     * Выставляет заголовок экрана в зависимости от текущего экрана
      */
     public void updateTitle(PlaceholderFragment fragment) {
+        String title = null;
+
         if(fragment == null) {
-            mTitle = getString(R.string.app_name);
+            title = getString(R.string.app_name);
         } else {
-            mTitle = fragment.getTitle();
+            title = fragment.getTitle();
         }
 
-        if(mTitle == null) {
-            mTitle = getString(R.string.app_name);
+        if(title == null) {
+            title = getString(R.string.app_name);
         }
 
-        TextView title = getToolbarTitle();
-        if(title != null) {
-            title.setText(mTitle);
+        TextView titleTextView = getToolbarTitle();
+        if(titleTextView != null) {
+            titleTextView.setText(title);
         }
     }
 
@@ -255,10 +257,6 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     public void updateDrawer() {
         mNavigationDrawerFragment.showData();
-    }
-
-    public Menu getMenu() {
-        return menu;
     }
 
     @Override
@@ -338,16 +336,6 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Вернуть id файла с разметкой дровера
      */
     public abstract int getNavigationDrawerLayoutId();
-
-    /**
-     * id глобального меню
-     */
-    public abstract int getGlobalMenuId();
-
-    /**
-     * id меню
-     */
-    public abstract int getMenuId();
 
     /**
      * Вернуть здесь TextView, в которой отображается заголовок тулбара

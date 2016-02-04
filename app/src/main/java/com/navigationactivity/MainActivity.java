@@ -96,13 +96,7 @@ public class MainActivity extends NavigationActivity {
     // Вернуть id меню во время открытого дровера
     @Override
     public int getGlobalMenuId() {
-        return R.menu.global;
-    }
-
-    // Вернуть id меню
-    @Override
-    public int getMenuId() {
-        return R.menu.main;
+        return R.menu.empty;
     }
 
     @Override
