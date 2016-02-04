@@ -57,6 +57,6 @@ public class MainFragment extends PlaceholderFragment {
 
     @Override
     public String getTitle() {
-        return "MAIN";
+        return "Главный экран";
     }
 }

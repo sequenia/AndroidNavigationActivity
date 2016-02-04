@@ -22,6 +22,11 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".permissions.PermissionsActivity"
+            android:label="@string/permissions_help" >
+        </activity>
     </application>
 
 </manifest>

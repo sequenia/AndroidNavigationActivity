@@ -5,4 +5,10 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
+    <Button
+        android:id="@+id/back_button"
+        android:text="Закрыть экран и вернуться назад"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

@@ -270,7 +270,6 @@ public class NavigationDrawerFragment extends Fragment {
         if(title != null) {
             title.setText(R.string.app_name);
         }
-        //((TextView)getActivity().findViewById(R.id.toolbar_title)).setText(R.string.app_name);
     }
 
     private ActionBar getActionBar() {

@@ -85,8 +85,6 @@ public abstract class NavigationActivity extends AppCompatActivity
     /**
      * Добавляет фрагмент в стек поверх текущих фрагментов.
      * Если новый фрагмент является главной секцией, то перед этим очищает стек.
-     *
-     * @param fragment
      */
     public void addSubFragment(PlaceholderFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -129,7 +127,9 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
+        if(actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
         TextView title = getToolbarTitle();
         if(title != null) {
@@ -184,20 +184,26 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if(fragmentManager.getBackStackEntryCount() > 1) {
-            super.onBackPressed();
-
-            PlaceholderFragment currentFragment = getLastFragment();
-            currentFragment.resumeFragment();
-            restore(currentFragment);
-            updateBackItem(currentFragment);
+            closeLastFragment();
         } else {
             finish();
         }
     }
 
+    public void closeLastFragment() {
+        super.onBackPressed();
+
+        PlaceholderFragment fragment = getLastFragment();
+
+        if(fragment != null) {
+            fragment.resumeFragment();
+            restore(fragment);
+            updateBackItem(fragment);
+        }
+    }
+
     /**
      * Показывает меню айтем в тулбаре с id = itemId
-     * @param itemId
      */
     public void showMenuItem(int itemId) {
         setMenuItemVisibility(itemId, true);
@@ -205,7 +211,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * Скрывает меню айтем с тулбара
-     * @param itemId
      */
     public void hideMenuItem(int itemId) {
         setMenuItemVisibility(itemId, false);
@@ -213,8 +218,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * Задает видимость меню айтема
-     * @param itemId
-     * @param isVisible
      */
     public void setMenuItemVisibility(int itemId, boolean isVisible) {
         if(menu != null) {
@@ -273,9 +276,6 @@ public abstract class NavigationActivity extends AppCompatActivity
     /**
      * Этот метод должен вернуть фрагмент в зависимости от переданного индекса.
      * (Индекс возвращается по номеру элемента меню).
-     *
-     * @param number
-     * @return
      */
     public PlaceholderFragment newFragmentInstance(int number) {
         return PlaceholderFragment.newInstance(number, createFragmentByNumber(number));
@@ -285,13 +285,11 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Здесь нужно добавить все элементы дровера в массив items
      * для привязки кликов по ним.
      * @param drawerContainer - уже созданная разметка дровера
-     * @param items
      */
     public abstract void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
 
     /**
      * Здесь нужно вернуть id разметки активити
-     * @return
      */
     public int getActivityLayoutId() {
         return R.layout.activity_navigation;
@@ -299,21 +297,17 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * Создать фрагмент в зависимости от номера
-     * @param number
-     * @return
      */
     public abstract PlaceholderFragment createFragmentByNumber(int number);
 
     /**
      * Этот метод должен вернуть главный фрагмент активити, который будет показан,
      * если не выбрано ни одного элемента меню.
-     * @return
      */
     public abstract PlaceholderFragment createMainFragment();
 
     /**
      * id фрагмента с дровером в разметке
-     * @return
      */
     public int getNavigationDrawerFragmentId() {
         return R.id.navigation_drawer;
@@ -321,7 +315,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * id виджета для активити с дровером в разметке
-     * @return
      */
     public int getNavigationDrawerLayoutWidgetId() {
         return R.id.drawer_layout;
@@ -329,7 +322,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * id фрагмента, куда будет помещаться контент
-     * @return
      */
     public int getContentFragmentId() {
         return R.id.content;
@@ -337,7 +329,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * id тулбара в разметке
-     * @return
      */
     public int getToolbarId() {
         return R.id.toolbar;
@@ -345,25 +336,21 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * Вернуть id файла с разметкой дровера
-     * @return
      */
     public abstract int getNavigationDrawerLayoutId();
 
     /**
      * id глобального меню
-     * @return
      */
     public abstract int getGlobalMenuId();
 
     /**
      * id меню
-     * @return
      */
     public abstract int getMenuId();
 
     /**
      * Вернуть здесь TextView, в которой отображается заголовок тулбара
-     * @return
      */
     public TextView getToolbarTitle() {
         return (TextView) findViewById(R.id.toolbar_title);

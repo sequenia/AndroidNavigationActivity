@@ -1,13 +1,14 @@
 package com.navigationactivity;
 
 import android.Manifest;
-import android.support.v4.content.PermissionChecker;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.navigationactivity.navigation.NavigationActivity;
 import com.navigationactivity.navigation.PlaceholderFragment;
+import com.navigationactivity.permissions.PermissionsActivity;
+import com.navigationactivity.permissions.PermissionsChecker;
 
 import java.util.HashMap;
 
@@ -21,17 +22,26 @@ public class MainActivity extends NavigationActivity {
     // Коды экранов (фрагментов)
     public static final int FRAGMENT_MAIN = 0;
     public static final int FRAGMENT_1 = 1;
-    public static final int FRAGMENT_2 = 3;
-    public static final int FRAGMENT_3 = 5;
+    public static final int FRAGMENT_2 = 2;
+    public static final int FRAGMENT_3 = 3;
     public static final int SUB_FRAGMENT = 111;
 
     // Менеджер проверки разрешений
-    private PermissionChecker checker;
+    private PermissionsChecker checker;
     // Разрешения, необходимые приложению
     private String[] PERMISSIONS = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private boolean permissionsShown = false; // Если уже показали, то не показывать
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Создаем менеджер проверки разрешений
+        checker = new PermissionsChecker(getApplicationContext());
+    }
 
     // Id файла с разметкой дровера
     @Override
@@ -93,5 +103,19 @@ public class MainActivity extends NavigationActivity {
     @Override
     public int getMenuId() {
         return R.menu.main;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Если не все разрешения выданы, то нужно их попросить
+        if(checker.permissionsDenied(PERMISSIONS)) {
+            // Но только если мы их еще не показывали или не недоели пользователю
+            if(!checker.clickedNeverAskAgain(this, PERMISSIONS) && !permissionsShown) {
+                permissionsShown = true;
+                PermissionsActivity.startActivityForResult(this, RequestCodes.CODE_PERMISSIONS, PERMISSIONS);
+            }
+        }
     }
 }

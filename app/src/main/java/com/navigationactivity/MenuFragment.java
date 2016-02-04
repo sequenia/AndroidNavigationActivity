@@ -37,7 +37,7 @@ public class MenuFragment extends PlaceholderFragment {
 
     @Override
     public String getTitle() {
-        return String.format("SECTION %d", getNumber());
+        return String.format("Секция меню %d", getNumber());
     }
 
     @Override
