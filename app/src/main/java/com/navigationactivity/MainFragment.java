@@ -27,12 +27,6 @@ public class MainFragment extends PlaceholderFragment {
         return false;
     }
 
-    // Скрыть предыдущий фрагмент
-    @Override
-    public boolean hidePrevFragment() {
-        return true;
-    }
-
     // Показывать кнопку меню в тулбаре
     @Override
     public boolean needsShowMainMenuButton() {

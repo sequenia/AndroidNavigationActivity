@@ -68,7 +68,6 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     /**
      * Настраивает экран под переданный фрагмент (заголовок, кнопки и т.д.)
-     * @param fragment
      */
     public void setupScreen(PlaceholderFragment fragment) {
         updateTitle(fragment);
@@ -187,46 +186,27 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if(fragmentManager.getBackStackEntryCount() > 1) {
-            closeLastFragment();
+            super.onBackPressed();
+
+            PlaceholderFragment fragment = getLastFragment();
+
+            if(fragment != null) {
+                fragment.resumeFragment();
+                updateBackItem(fragment);
+            }
         } else {
             finish();
         }
     }
 
+    /**
+     * Закрывает верхний фрагмент
+     */
     public void closeLastFragment() {
-        super.onBackPressed();
-
-        PlaceholderFragment fragment = getLastFragment();
-
-        if(fragment != null) {
-            fragment.resumeFragment();
-            updateBackItem(fragment);
-        }
-    }
-
-    /**
-     * Показывает меню айтем в тулбаре с id = itemId
-     */
-    public void showMenuItem(Menu menu, int itemId) {
-        setMenuItemVisibility(menu, itemId, true);
-    }
-
-    /**
-     * Скрывает меню айтем с тулбара
-     */
-    public void hideMenuItem(Menu menu, int itemId) {
-        setMenuItemVisibility(menu, itemId, false);
-    }
-
-    /**
-     * Задает видимость меню айтема
-     */
-    public void setMenuItemVisibility(Menu menu, int itemId, boolean isVisible) {
-        if(menu != null) {
-            MenuItem item = menu.findItem(itemId);
-            if(item != null) {
-                item.setVisible(isVisible);
-            }
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            getSupportFragmentManager().popBackStackImmediate();
+        } else {
+            finish();
         }
     }
 

@@ -42,7 +42,7 @@ public class MenuFragment extends PlaceholderFragment {
 
     @Override
     public int getMenuId() {
-        return R.menu.main;
+        return R.menu.empty;
     }
 
     @Override

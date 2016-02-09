@@ -38,7 +38,7 @@ public class SubFragment extends PlaceholderFragment {
 
     @Override
     public int getMenuId() {
-        return R.menu.empty;
+        return R.menu.main;
     }
 
     @Override
