@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -51,7 +50,9 @@ public class NavigationDrawerFragment extends Fragment {
     private ViewGroup mDrawerContainer;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    public static final int NO_SELECTED = -1;
+
+    private int mCurrentSelectedPosition = NO_SELECTED;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -59,7 +60,7 @@ public class NavigationDrawerFragment extends Fragment {
     private HashMap<Integer, View> items;
 
     public NavigationDrawerFragment() {
-        items = new HashMap<Integer, View>();
+        items = new HashMap<>();
     }
 
     @Override
@@ -75,9 +76,6 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
-
-        // Select either the default item (0) or the last selected item.
-        //selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -110,6 +108,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         setUp(getNavigationDrawerFragmentId(),
                 (DrawerLayout) getActivity().findViewById(getNavigationDrawerLayoutWidgetId()));
+
+        setSelectedDrawerItem(mCurrentSelectedPosition);
 
         return mDrawerContainer;
     }
@@ -193,16 +193,28 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    /**
+     * Выбирает элемент меню
+     */
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerContainer != null) {
-            //mDrawerListView.setItemChecked(position, true);
-        }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+    }
+
+    public void setSelectedDrawerItem(int position) {
+        mCurrentSelectedPosition = position;
+        if (mDrawerContainer != null && mCallbacks != null) {
+            for(Integer key : items.keySet()) {
+                if(key == position) {
+                    mCallbacks.selectDrawerItem(items.get(key));
+                } else {
+                    mCallbacks.deselectDrawerItem(items.get(key));
+                }
+            }
         }
     }
 
@@ -288,6 +300,8 @@ public class NavigationDrawerFragment extends Fragment {
         int getNavigationDrawerLayoutId();
         int getNavigationDrawerFragmentId();
         int getNavigationDrawerLayoutWidgetId();
+        void selectDrawerItem(View menuItem);
+        void deselectDrawerItem(View menuItem);
         void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
         TextView getToolbarTitle();
         int getGlobalMenuId();

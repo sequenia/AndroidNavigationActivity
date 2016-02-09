@@ -39,10 +39,13 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Настройка навигационного меню
-        mNavigationDrawerFragment = createNavigationDrawer();
-        fragmentManager.beginTransaction()
-                .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment)
-                .commit();
+        mNavigationDrawerFragment = (NavigationDrawerFragment) fragmentManager.findFragmentByTag("drawer");
+        if(mNavigationDrawerFragment == null) {
+            mNavigationDrawerFragment = createNavigationDrawer();
+            fragmentManager.beginTransaction()
+                    .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment, "drawer")
+                    .commit();
+        }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -71,6 +74,7 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     public void setupScreen(PlaceholderFragment fragment) {
         updateTitle(fragment);
+        setDrawerItemSelection(fragment);
         hideDefaultTitle();
         supportInvalidateOptionsMenu();
     }
@@ -126,6 +130,21 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     private void updateBackItem(PlaceholderFragment fragment) {
         mNavigationDrawerFragment.setDrawerIndicatorEnabled(fragment.needsShowMainMenuButton());
+    }
+
+    /**
+     * Выделяет элемент меню.
+     * Если это главный фрагмент, снимает выделения.
+     */
+    private void setDrawerItemSelection(PlaceholderFragment fragment) {
+        // Выделить нужно только в случае элемента меню
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            if(fragment.clearStackBeforeOpen()) {
+                mNavigationDrawerFragment.setSelectedDrawerItem(fragment.getNumber());
+            }
+        } else {
+            mNavigationDrawerFragment.setSelectedDrawerItem(NavigationDrawerFragment.NO_SELECTED);
+        }
     }
 
     /**
@@ -187,13 +206,7 @@ public abstract class NavigationActivity extends AppCompatActivity
 
         if(fragmentManager.getBackStackEntryCount() > 1) {
             super.onBackPressed();
-
-            PlaceholderFragment fragment = getLastFragment();
-
-            if(fragment != null) {
-                fragment.resumeFragment();
-                updateBackItem(fragment);
-            }
+            afterClose();
         } else {
             finish();
         }
@@ -205,8 +218,22 @@ public abstract class NavigationActivity extends AppCompatActivity
     public void closeLastFragment() {
         if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
             getSupportFragmentManager().popBackStackImmediate();
+            afterClose();
         } else {
             finish();
+        }
+    }
+
+    /**
+     * После закрытия фрагмента нужно обновить кнопку меню и сменить выделение в дровере.
+     * Все остальные действия делаются на изменение бэкстека.
+     */
+    private void afterClose() {
+        PlaceholderFragment fragment = getLastFragment();
+
+        if(fragment != null) {
+            fragment.resumeFragment();
+            updateBackItem(fragment);
         }
     }
 
@@ -214,7 +241,7 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Выставляет заголовок экрана в зависимости от текущего экрана
      */
     public void updateTitle(PlaceholderFragment fragment) {
-        String title = null;
+        String title;
 
         if(fragment == null) {
             title = getString(R.string.app_name);

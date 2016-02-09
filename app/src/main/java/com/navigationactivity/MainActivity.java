@@ -10,6 +10,7 @@ import com.navigationactivity.navigation.PlaceholderFragment;
 import com.navigationactivity.permissions.PermissionsActivity;
 import com.navigationactivity.permissions.PermissionsChecker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -60,6 +61,16 @@ public class MainActivity extends NavigationActivity {
         items.put(FRAGMENT_1, drawerContainer.findViewById(R.id.section1));
         items.put(FRAGMENT_2, drawerContainer.findViewById(R.id.section2));
         items.put(FRAGMENT_3, drawerContainer.findViewById(R.id.section3));
+    }
+
+    @Override
+    public void selectDrawerItem(View menuItem) {
+        menuItem.setBackgroundResource(R.color.material_grey_300);
+    }
+
+    @Override
+    public void deselectDrawerItem(View menuItem) {
+        menuItem.setBackgroundResource(R.color.white);
     }
 
     @Override
