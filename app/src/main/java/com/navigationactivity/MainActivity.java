@@ -104,12 +104,6 @@ public class MainActivity extends NavigationActivity {
         return fragment;
     }
 
-    // Вернуть id меню во время открытого дровера
-    @Override
-    public int getGlobalMenuId() {
-        return R.menu.empty;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();

@@ -3,11 +3,14 @@ package com.navigationactivity.navigation;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.HashMap;
 
 /**
  * Created by chybakut2004 on 13.07.15.
@@ -21,6 +24,9 @@ public abstract class PlaceholderFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    // Данные, поступающие от других фрагментов
+    private HashMap<String, Object> messages;
 
     public PlaceholderFragment() {
 
@@ -38,9 +44,56 @@ public abstract class PlaceholderFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Отправляет сообщение в другой фрагмент
+     * @param fragmentNumber  номер фрагмента, в который передать сообщение
+     * @param key ключ, под которым передается сообщение
+     * @param message сообщение
+     */
+    public void sendMessage(int fragmentNumber, String key, Object message) {
+        FragmentActivity activity = getActivity();
+        if(activity != null) {
+            Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(String.valueOf(fragmentNumber));
+            if(fragment != null && fragment instanceof PlaceholderFragment) {
+                ((PlaceholderFragment) fragment).addMessage(key, message);
+            }
+        }
+    }
+
+    // Принимает сообщения
+    public void acceptMessages() {
+        if(hasMessages()) {
+            onMessagesReceived(messages);
+            clearMessages();
+        }
+    }
+
+    public boolean hasMessages() {
+        return messages != null;
+    }
+
+    /**
+     * Добавляет сообщение
+     */
+    public void addMessage(String key, Object message) {
+        if(messages == null) {
+            messages = new HashMap<>();
+        }
+
+        messages.put(key, message);
+    }
+
+    /**
+     * Очищает сообщения
+     */
+    public void clearMessages() {
+        messages = null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -66,6 +119,14 @@ public abstract class PlaceholderFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * Срабатывает при приеме сообщения фрагментом во время его повторного появления на экране
+     * @param messages
+     */
+    public void onMessagesReceived(HashMap<String, Object> messages) {
+
     }
 
     /**

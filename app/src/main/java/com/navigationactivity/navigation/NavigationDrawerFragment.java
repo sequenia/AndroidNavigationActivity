@@ -304,7 +304,6 @@ public class NavigationDrawerFragment extends Fragment {
         void deselectDrawerItem(View menuItem);
         void initDrawerItems(HashMap<Integer, View> items, ViewGroup drawerContainer);
         TextView getToolbarTitle();
-        int getGlobalMenuId();
     }
 
     public void setDrawerIndicatorEnabled(boolean enabled) {
@@ -363,13 +362,5 @@ public class NavigationDrawerFragment extends Fragment {
      */
     public TextView getToolbarTitle() {
         return mCallbacks.getToolbarTitle();
-    }
-
-    /**
-     * Ссылка на глобальное меню
-     * @return
-     */
-    public int getGlobalMenuId() {
-        return mCallbacks.getGlobalMenuId();
     }
 }

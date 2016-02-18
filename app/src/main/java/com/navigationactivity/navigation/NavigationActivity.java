@@ -233,6 +233,7 @@ public abstract class NavigationActivity extends AppCompatActivity
 
         if(fragment != null) {
             fragment.resumeFragment();
+            fragment.acceptMessages();
             updateBackItem(fragment);
         }
     }
