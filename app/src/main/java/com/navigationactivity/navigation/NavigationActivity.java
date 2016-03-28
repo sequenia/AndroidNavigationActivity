@@ -139,10 +139,8 @@ public abstract class NavigationActivity extends AppCompatActivity
         } else {
             ActionBar actionBar = getSupportActionBar();
             if(actionBar != null) {
-                //actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeButtonEnabled(!fragment.needsShowMainMenuButton());
-                //actionBar.setDisplayShowHomeEnabled(true);
-                //actionBar.setDisplayHomeAsUpEnabled(fragment.needsShowMainMenuButton());
+                actionBar.setDisplayHomeAsUpEnabled(!fragment.needsShowMainMenuButton());
+                actionBar.setHomeButtonEnabled(true);
             }
         }
     }
@@ -375,6 +373,6 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Возвращает true, если нужен навигационное боковое меню
      */
     public boolean hasDrawer() {
-        return true;
+        return false;
     }
 }
