@@ -39,12 +39,14 @@ public abstract class NavigationActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         // Настройка навигационного меню
-        mNavigationDrawerFragment = (NavigationDrawerFragment) fragmentManager.findFragmentByTag("drawer");
-        if(mNavigationDrawerFragment == null) {
-            mNavigationDrawerFragment = createNavigationDrawer();
-            fragmentManager.beginTransaction()
-                    .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment, "drawer")
-                    .commit();
+        if(hasDrawer()) {
+            mNavigationDrawerFragment = (NavigationDrawerFragment) fragmentManager.findFragmentByTag("drawer");
+            if (mNavigationDrawerFragment == null) {
+                mNavigationDrawerFragment = createNavigationDrawer();
+                fragmentManager.beginTransaction()
+                        .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment, "drawer")
+                        .commit();
+            }
         }
 
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -61,9 +63,12 @@ public abstract class NavigationActivity extends AppCompatActivity
         if(savedInstanceState == null) {
             PlaceholderFragment mainFragment = createMainFragment();
             fragmentManager.beginTransaction()
-                    .add(R.id.content, mainFragment, mainFragment.getName())
+                    .add(getContentFragmentId(), mainFragment, mainFragment.getName())
                     .addToBackStack(mainFragment.getName())
                     .commit();
+            if(!hasDrawer()) {
+                updateBackItem(mainFragment);
+            }
         } else {
             setupScreen(getLastFragment());
         }
@@ -129,7 +134,17 @@ public abstract class NavigationActivity extends AppCompatActivity
      * возвращенного методом needsShowBackItem();
      */
     private void updateBackItem(PlaceholderFragment fragment) {
-        mNavigationDrawerFragment.setDrawerIndicatorEnabled(fragment.needsShowMainMenuButton());
+        if(hasDrawer()) {
+            mNavigationDrawerFragment.setDrawerIndicatorEnabled(fragment.needsShowMainMenuButton());
+        } else {
+            ActionBar actionBar = getSupportActionBar();
+            if(actionBar != null) {
+                //actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(!fragment.needsShowMainMenuButton());
+                //actionBar.setDisplayShowHomeEnabled(true);
+                //actionBar.setDisplayHomeAsUpEnabled(fragment.needsShowMainMenuButton());
+            }
+        }
     }
 
     /**
@@ -137,13 +152,15 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Если это главный фрагмент, снимает выделения.
      */
     private void setDrawerItemSelection(PlaceholderFragment fragment) {
-        // Выделить нужно только в случае элемента меню
-        if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            if(fragment.clearStackBeforeOpen()) {
-                mNavigationDrawerFragment.setSelectedDrawerItem(fragment.getNumber());
+        if(hasDrawer()) {
+            // Выделить нужно только в случае элемента меню
+            if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                if (fragment.clearStackBeforeOpen()) {
+                    mNavigationDrawerFragment.setSelectedDrawerItem(fragment.getNumber());
+                }
+            } else {
+                mNavigationDrawerFragment.setSelectedDrawerItem(NavigationDrawerFragment.NO_SELECTED);
             }
-        } else {
-            mNavigationDrawerFragment.setSelectedDrawerItem(NavigationDrawerFragment.NO_SELECTED);
         }
     }
 
@@ -264,7 +281,9 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Обновляет навигационное меню.
      */
     public void updateDrawer() {
-        mNavigationDrawerFragment.showData();
+        if(hasDrawer()) {
+            mNavigationDrawerFragment.showData();
+        }
     }
 
     @Override
@@ -350,5 +369,12 @@ public abstract class NavigationActivity extends AppCompatActivity
      */
     public TextView getToolbarTitle() {
         return (TextView) findViewById(R.id.toolbar_title);
+    }
+
+    /**
+     * Возвращает true, если нужен навигационное боковое меню
+     */
+    public boolean hasDrawer() {
+        return true;
     }
 }

@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigationactivity.navigation.NavigationActivity;
 import com.navigationactivity.navigation.PlaceholderFragment;
 
 /**
@@ -47,6 +48,13 @@ public class MainFragment extends PlaceholderFragment {
     @Override
     public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
 
+        view.findViewById(R.id.open).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlaceholderFragment subFragment = ((NavigationActivity) getActivity()).newFragmentInstance(MainActivity.FRAGMENT_1);
+                ((NavigationActivity) getActivity()).addSubFragment(subFragment);
+            }
+        });
     }
 
     @Override
