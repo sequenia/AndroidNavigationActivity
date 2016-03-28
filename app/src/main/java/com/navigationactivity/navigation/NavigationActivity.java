@@ -2,7 +2,6 @@ package com.navigationactivity.navigation;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,6 +25,7 @@ public abstract class NavigationActivity extends AppCompatActivity
 
     // Дровер
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +49,8 @@ public abstract class NavigationActivity extends AppCompatActivity
             }
         }
 
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                PlaceholderFragment last = getLastFragment();
-                if(last != null) {
-                    setupScreen(last);
-                }
-            }
-        });
+        onBackStackChangedListener = getOnBackStackChangedListener();
+        fragmentManager.addOnBackStackChangedListener(onBackStackChangedListener);
 
         // Помещаем главный фрагмент в стек
         if(savedInstanceState == null) {
@@ -72,6 +65,18 @@ public abstract class NavigationActivity extends AppCompatActivity
         } else {
             setupScreen(getLastFragment());
         }
+    }
+
+    private FragmentManager.OnBackStackChangedListener getOnBackStackChangedListener() {
+        return new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                PlaceholderFragment last = getLastFragment();
+                if(last != null) {
+                    setupScreen(last);
+                }
+            }
+        };
     }
 
     /**
@@ -106,23 +111,18 @@ public abstract class NavigationActivity extends AppCompatActivity
 
         // Если фрагмент является секцией меню, то очищаем стек, перед тем как добавить его.
         if(fragment.clearStackBeforeOpen()) {
-            while (fragmentManager.getBackStackEntryCount() > 1) {
-                fragmentManager.popBackStackImmediate();
+            if(onBackStackChangedListener != null) {
+                fragmentManager.removeOnBackStackChangedListener(onBackStackChangedListener);
             }
+            if(fragmentManager.getBackStackEntryCount() > 1) {
+                fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getName(), 0);
+            }
+            onBackStackChangedListener = getOnBackStackChangedListener();
+            fragmentManager.addOnBackStackChangedListener(onBackStackChangedListener);
         }
 
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-
-        // Ставим верхний фрагмент на паузу
-        PlaceholderFragment last = getLastFragment();
-        last.onPause(); // Останавливаем предыдущий фрагмент
-        if (fragment.hidePrevFragment()) {
-            ft.hide(last);  // Скрываем предыдущий фрагмент с экрана
-        } else {
-            ft.show(last);
-        }
-
-        ft.add(getContentFragmentId(), fragment, fragment.getName())
+        fragmentManager.beginTransaction()
+                .add(getContentFragmentId(), fragment, fragment.getName())
                 .addToBackStack(fragment.getName())
                 .commit();
 
@@ -373,6 +373,6 @@ public abstract class NavigationActivity extends AppCompatActivity
      * Возвращает true, если нужен навигационное боковое меню
      */
     public boolean hasDrawer() {
-        return false;
+        return true;
     }
 }
