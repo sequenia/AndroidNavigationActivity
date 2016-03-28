@@ -2,9 +2,11 @@ package com.navigationactivity.navigation;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +49,12 @@ public abstract class NavigationActivity extends AppCompatActivity
                         .replace(getNavigationDrawerFragmentId(), mNavigationDrawerFragment, "drawer")
                         .commit();
             }
+        } else {
+            View drawer = findViewById(getNavigationDrawerFragmentId());
+            drawer.setVisibility(View.GONE);
+            DrawerLayout.LayoutParams layoutParams = (DrawerLayout.LayoutParams) drawer.getLayoutParams();
+            layoutParams.gravity = Gravity.NO_GRAVITY;
+            drawer.setLayoutParams(layoutParams);
         }
 
         onBackStackChangedListener = getOnBackStackChangedListener();
