@@ -1,4 +1,4 @@
-package com.navigationactivity;
+package com.navigationactivity.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,15 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.navigationactivity.activities.MainActivity;
+import com.navigationactivity.R;
 import com.navigationactivity.navigation.NavigationActivity;
 import com.navigationactivity.navigation.PlaceholderFragment;
+
+import java.util.Locale;
 
 /**
  * Created by chybakut2004 on 04.08.15.
  *
  * Пример секции меню
  */
-public class MenuFragment extends PlaceholderFragment {
+public class MenuFragment extends AppFragment {
 
     @Override
     public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {
@@ -37,7 +41,7 @@ public class MenuFragment extends PlaceholderFragment {
 
     @Override
     public String getTitle() {
-        return String.format("Секция меню %d", getNumber());
+        return String.format(Locale.US, "Секция меню %d", getNumber());
     }
 
     @Override

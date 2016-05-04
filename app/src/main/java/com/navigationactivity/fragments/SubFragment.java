@@ -1,4 +1,4 @@
-package com.navigationactivity;
+package com.navigationactivity.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.navigationactivity.R;
 import com.navigationactivity.navigation.NavigationActivity;
-import com.navigationactivity.navigation.PlaceholderFragment;
 
 /**
  * Created by chybakut2004 on 04.08.15.
  *
  * Пример фрагмента из навигации
  */
-public class SubFragment extends PlaceholderFragment {
+public class SubFragment extends AppFragment {
 
     @Override
     public void onCreateViewCustom(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState, View view) {

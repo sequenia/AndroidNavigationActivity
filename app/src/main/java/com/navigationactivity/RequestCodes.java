@@ -8,4 +8,5 @@ package com.navigationactivity;
 public class RequestCodes {
 
     public static final int CODE_PERMISSIONS = 1;
+    public static final int CODE_MESSAGE = 2;
 }

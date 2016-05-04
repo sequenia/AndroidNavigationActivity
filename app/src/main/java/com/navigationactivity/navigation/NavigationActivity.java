@@ -2,6 +2,7 @@ package com.navigationactivity.navigation;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -123,14 +124,16 @@ public abstract class NavigationActivity extends AppCompatActivity
                 fragmentManager.removeOnBackStackChangedListener(onBackStackChangedListener);
             }
             if(fragmentManager.getBackStackEntryCount() > 1) {
-                fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(0).getName(), 0);
+                String name = fragmentManager.getBackStackEntryAt(0).getName();
+                fragmentManager.popBackStack(name, 0);
             }
             onBackStackChangedListener = getOnBackStackChangedListener();
             fragmentManager.addOnBackStackChangedListener(onBackStackChangedListener);
         }
 
-        fragmentManager.beginTransaction()
-                .add(getContentFragmentId(), fragment, fragment.getName())
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        ft.add(getContentFragmentId(), fragment, fragment.getName())
                 .addToBackStack(fragment.getName())
                 .commit();
 

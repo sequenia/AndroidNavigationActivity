@@ -1,16 +1,20 @@
-package com.navigationactivity;
+package com.navigationactivity.activities;
 
 import android.Manifest;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigationactivity.R;
+import com.navigationactivity.RequestCodes;
+import com.navigationactivity.fragments.MainFragment;
+import com.navigationactivity.fragments.MenuFragment;
+import com.navigationactivity.fragments.SubFragment;
 import com.navigationactivity.navigation.NavigationActivity;
 import com.navigationactivity.navigation.PlaceholderFragment;
 import com.navigationactivity.permissions.PermissionsActivity;
 import com.navigationactivity.permissions.PermissionsChecker;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

@@ -1,4 +1,4 @@
-package com.navigationactivity;
+package com.navigationactivity.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.navigationactivity.activities.MainActivity;
+import com.navigationactivity.R;
 import com.navigationactivity.navigation.NavigationActivity;
 import com.navigationactivity.navigation.PlaceholderFragment;
 
@@ -14,7 +16,7 @@ import com.navigationactivity.navigation.PlaceholderFragment;
  *
  * Пример главного фрагмента
  */
-public class MainFragment extends PlaceholderFragment {
+public class MainFragment extends AppFragment {
 
     // Задание вида меню (скрытие и показ кнопок на тулбаре)
     @Override
